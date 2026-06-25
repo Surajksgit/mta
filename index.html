@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium passenger van rentals and chauffeur services in the USA. Book airport transfers, local rentals, and long-distance trips in our luxury 15-passenger van.">
+    <title>MTA Travels | Luxury Passenger Van Rentals & Transportation</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom JS -->
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <span class="logo-accent">MTA</span> Travels
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#booking" class="nav-link">Book Now</a>
+                <a href="#fleet" class="nav-link">Our Fleet</a>
+                <a href="#why-choose-us" class="nav-link">Why Us</a>
+            </nav>
+            <a href="#booking" class="btn btn-primary nav-cta">Reserve Van</a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="badge">Premium Van Service</span>
+                <h1 class="hero-title">First-Class Group Travel, Comfort Redefined</h1>
+                <p class="hero-subtitle">Experience premium solo-van service across the USA. Perfect for local group rentals, airport pick-ups, and long-distance travel in safety and style.</p>
+                
+                <div class="hero-features">
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>15-Passenger Luxury Layout</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Professional & Vetted Driver Option</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>24/7 Support & On-Time Guarantee</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="#booking" class="btn btn-primary btn-lg">Book Your Journey</a>
+                    <a href="#services" class="btn btn-secondary btn-lg">Explore Services</a>
+                </div>
+            </div>
+            
+            <div class="hero-image-wrapper">
+                <!-- Displays the generated premium van image, fallback to a premium royalty-free unsplash image of a luxury van -->
+                <img src="assets/roadpass-zRetWvOnbf0-unsplash.jpg" alt="Luxury Passenger Van" class="hero-image" onerror="this.src='./assets/van.png'">
+                <div class="hero-image-accent"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="booking-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="badge">Online Reservation</span>
+                <h2 class="section-title">Book Your Trip</h2>
+                <p class="section-subtitle">Secure your date and time in just a few clicks. Check real-time availability instantly below.</p>
+            </div>
+
+            <!-- Booking Card Container -->
+            <div class="booking-card">
+                <!-- Toggle Mode Selector -->
+                <div class="booking-toggle-container">
+                    <button class="booking-toggle-btn active" id="toggleTransport" data-mode="transport">
+                        <i class="fa-solid fa-route"></i> Chauffeur Transportation
+                    </button>
+                    <button class="booking-toggle-btn" id="toggleRental" data-mode="rental">
+                        <i class="fa-solid fa-car-side"></i> Van Rental (Solo)
+                    </button>
+                </div>
+
+                <form id="bookingForm" class="booking-form" novalidate>
+                    <!-- Row 1: Service Type & Details -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="serviceCategory"><i class="fa-solid fa-tags"></i> Service Type</label>
+                            <select id="serviceCategory" name="serviceCategory" required>
+                                <option value="" disabled selected>Select a Service</option>
+                                <option value="airport">Airport Pick-up / Drop-off</option>
+                                <option value="local">Local Day Rental / Events</option>
+                                <option value="long-distance">Long-Distance Trip</option>
+                            </select>
+                            <span class="error-message" id="error-serviceCategory">Please select a service type.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingDate"><i class="fa-solid fa-calendar-days"></i> Select Date</label>
+                            <input type="date" id="bookingDate" name="bookingDate" required>
+                            <span class="error-message" id="error-bookingDate">Please select a future date.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingTime"><i class="fa-solid fa-clock"></i> Preferred Time</label>
+                            <input type="time" id="bookingTime" name="bookingTime" required>
+                            <span class="error-message" id="error-bookingTime">Please select a valid time slot.</span>
+                        </div>
+
+                        <div class="form-group" id="durationGroup">
+                            <label for="bookingDuration" id="durationLabel"><i class="fa-solid fa-hourglass-half"></i> Duration</label>
+                            <input type="number" id="bookingDuration" name="bookingDuration" min="1" value="1" required>
+                            <span class="error-message" id="error-bookingDuration">Please enter a valid duration.</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Location Inputs (Dynamic) -->
+                    <div class="form-grid margin-top-md">
+                        <div class="form-group col-span-2" id="pickupGroup">
+                            <label for="pickupAddress"><i class="fa-solid fa-location-dot"></i> Pick-up Address</label>
+                            <input type="text" id="pickupAddress" name="pickupAddress" placeholder="e.g. 123 Main St, Dallas, TX or DFW Airport Terminal D" required>
+                            <span class="error-message" id="error-pickupAddress">Pick-up location is required.</span>
+                        </div>
+
+                        <div class="form-group col-span-2" id="dropoffGroup">
+                            <label for="dropoffAddress"><i class="fa-solid fa-flag-checkered"></i> Drop-off Address</label>
+                            <input type="text" id="dropoffAddress" name="dropoffAddress" placeholder="e.g. Hotel, Office, or Destination Address" required>
+                            <span class="error-message" id="error-dropoffAddress">Drop-off location is required.</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Customer Information -->
+                    <div class="form-grid margin-top-md">
+                        <div class="form-group">
+                            <label for="customerName"><i class="fa-solid fa-user"></i> Full Name</label>
+                            <input type="text" id="customerName" name="customerName" placeholder="John Doe" required>
+                            <span class="error-message" id="error-customerName">Full name is required.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customerEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                            <input type="email" id="customerEmail" name="customerEmail" placeholder="john@example.com" required>
+                            <span class="error-message" id="error-customerEmail">Please enter a valid email.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customerPhone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" placeholder="(555) 000-0000" required>
+                            <span class="error-message" id="error-customerPhone">Please enter a valid phone number.</span>
+                        </div>
+                    </div>
+
+                    <!-- Price Estimate Box -->
+                    <div class="price-estimate-box" id="priceEstimateBox">
+                        <div class="price-detail">
+                            <span class="price-detail-label">Base Rate:</span>
+                            <span class="price-detail-val" id="priceBaseVal">$0.00</span>
+                        </div>
+                        <div class="price-detail" id="priceFactorRow">
+                            <span class="price-detail-label" id="priceFactorLabel">Factor:</span>
+                            <span class="price-detail-val" id="priceFactorVal">$0.00</span>
+                        </div>
+                        <div class="price-total">
+                            <span class="price-total-label">Estimated Total:</span>
+                            <span class="price-total-val" id="priceTotalVal">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Availability Checker Status & Submit -->
+                    <div class="booking-footer margin-top-lg">
+                        <div id="availabilityStatus" class="availability-status hidden">
+                            <div class="status-indicator"></div>
+                            <span class="status-text">Checking live slots...</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
+                            <i class="fa-solid fa-calendar-check"></i> Book Reservation
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Booking Management Panel (For testing availability & localStorage simulation) -->
+            <div class="booking-management-panel margin-top-xl">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-database"></i> Live Simulated Calendar Database</h3>
+                    <button class="btn btn-xs btn-outline" id="clearBookingsBtn">Reset Calendar Slots</button>
+                </div>
+                <p class="panel-desc">Because this is a static site, we simulate checking a live database. To test a booking collision error, book a slot below, then try to submit another reservation for the exact same date and time.</p>
+                <div class="table-responsive">
+                    <table class="bookings-table">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Service Type</th>
+                                <th>Mode</th>
+                                <th>Date & Time</th>
+                                <th>Route</th>
+                                <th>Est. Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsList">
+                            <!-- Populated dynamically by app.js -->
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No reservations booked yet. Form submissions will appear here.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="badge">What We Offer</span>
+                <h2 class="section-title">Tailored Transportation Services</h2>
+                <p class="section-subtitle">Whether you need local group transport, airport transfers, or cross-country road trips, we have you covered.</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-plane-arrival"></i>
+                    </div>
+                    <h3 class="service-card-title">Airport Transfers</h3>
+                    <p class="service-card-text">Punctual and reliable pick-up and drop-off services for major airports. We track your flight details to adjust for delays, ensuring stress-free passenger van transportation for your entire family or executive group.</p>
+                    <ul class="service-bullets">
+                        <li><i class="fa-solid fa-check"></i> Flight tracking & adjustments</li>
+                        <li><i class="fa-solid fa-check"></i> Luggage handling support</li>
+                        <li><i class="fa-solid fa-check"></i> Meet & Greet service</li>
+                    </ul>
+                    <a href="#booking" class="service-card-link">Book Airport Shuttle <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card highlighted">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <h3 class="service-card-title">Local Van Rentals</h3>
+                    <p class="service-card-text">Rent our high-roof, premium passenger van for personal outings, corporate functions, wedding parties, or sports events. Enjoy spacious, air-conditioned luxury for up to 15 people with options for professional drivers.</p>
+                    <ul class="service-bullets">
+                        <li><i class="fa-solid fa-check"></i> Daily & hourly packages</li>
+                        <li><i class="fa-solid fa-check"></i> Flexible pick-up points</li>
+                        <li><i class="fa-solid fa-check"></i> Modern audio & charging systems</li>
+                    </ul>
+                    <a href="#booking" class="service-card-link">Reserve Local Rental <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-road"></i>
+                    </div>
+                    <h3 class="service-card-title">Long-Distance Trips</h3>
+                    <p class="service-card-text">Embark on multi-city tours or state-to-state road trips. Comfort is guaranteed with high-back reclining seats, onboard Wi-Fi, and generous luggage capacity. Perfect for church trips, band tours, or family vacations.</p>
+                    <ul class="service-bullets">
+                        <li><i class="fa-solid fa-check"></i> State-to-state operations</li>
+                        <li><i class="fa-solid fa-check"></i> Customized route planning</li>
+                        <li><i class="fa-solid fa-check"></i> Relieving driver arrangements</li>
+                    </ul>
+                    <a href="#booking" class="service-card-link">Request Long-Distance <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fleet Showcase Section -->
+    <section id="fleet" class="fleet-section">
+        <div class="container fleet-container">
+            <div class="fleet-content">
+                <span class="badge">Our Fleet</span>
+                <h2 class="section-title">The Ultimate Group Passenger Van</h2>
+                <p class="section-desc">Our premium, high-ceiling luxury passenger van represents the absolute best in class. Cleaned and sanitized before every single dispatch, this vehicle blends executive-level sophistication with high-capacity group transport utility.</p>
+                
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <div class="spec-val">15</div>
+                        <div class="spec-label">Reclining Seats</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-val">14+</div>
+                        <div class="spec-label">Large Suitcases</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-val">High</div>
+                        <div class="spec-label">Roof Clearance</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-val">Free</div>
+                        <div class="spec-label">High-Speed Wi-Fi</div>
+                    </div>
+                </div>
+
+                <div class="fleet-features-list">
+                    <div class="fleet-feature"><i class="fa-solid fa-circle-check"></i> Individual USB charging ports for every seat row</div>
+                    <div class="fleet-feature"><i class="fa-solid fa-circle-check"></i> Front and rear multi-zone climate control settings</div>
+                    <div class="fleet-feature"><i class="fa-solid fa-circle-check"></i> Tinted privacy windows and ambient lighting</div>
+                    <div class="fleet-feature"><i class="fa-solid fa-circle-check"></i> Premium surround sound audio with Bluetooth pairing</div>
+                </div>
+            </div>
+            <div class="fleet-image-container">
+                <img src="assets/luxuryvan.png" alt="Fleet Passenger Van Interior" class="fleet-image">
+                <div class="fleet-caption">
+                    <i class="fa-solid fa-shield-halved"></i> Fully Insured, Licensed, and DOT-Compliant Operations
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us / Testimonials -->
+    <section id="why-choose-us" class="testimonials-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="badge">Customer Reviews</span>
+                <h2 class="section-title">Why Groups Choose MTA Solo Van</h2>
+                <p class="section-subtitle">Read feedback from travel coordinators, corporate planners, and families across the nation.</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Booked the MTA Solo Van for an airport run with 12 coworkers and all of our baggage. The driver was 15 minutes early, the van was immaculate, and the USB chargers at every seat were a huge lifesaver. Highly recommend!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <span class="author-name">Sarah Jenkins</span>
+                            <span class="author-title">Corporate Event Planner, Dallas, TX</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Rent the van option for our 4-day trip to Oklahoma. The high-roof ceiling is amazing—no hunched backs getting in or out. The rental process was seamless and the customer support was extremely responsive."</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <span class="author-name">Michael Thompson</span>
+                            <span class="author-title">Family Reunion Organizer, Chicago, IL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"We utilized their long-distance transportation service for a multi-city band tour. Driver was highly professional, navigation was spot-on, and riding in those comfortable leather seats made the 8-hour travel days a breeze."</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <span class="author-name">David Reyes</span>
+                            <span class="author-title">Tour Coordinator, Austin, TX</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Confirmation Modal -->
+    <div id="bookingModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
+            <div class="modal-icon success">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="modal-title">Booking Confirmed!</h3>
+            <p class="modal-desc">Your premium solo-van reservation has been logged into our simulated system. Here are your booking details:</p>
+            
+            <div class="booking-receipt" id="bookingReceipt">
+                <!-- Populated dynamically by app.js -->
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="modalOkBtn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col-about">
+                <a href="#" class="footer-logo"><span class="logo-accent">MTA</span> Solo Van</a>
+                <p class="footer-about-text">Providing high-end, reliable, and premium passenger van transport and rental services throughout the United States. Safety, convenience, and comfort are our core priorities.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#services">Airport Transfers</a></li>
+                    <li><a href="#services">Local Van Rentals</a></li>
+                    <li><a href="#services">Long-Distance Trips</a></li>
+                    <li><a href="#fleet">Corporate Events</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#booking">Book Now</a></li>
+                    <li><a href="#fleet">Our Fleet</a></li>
+                    <li><a href="#why-choose-us">Customer Reviews</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col-contact">
+                <h4>Contact Details</h4>
+                <ul class="contact-info-list">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>1200 Premium Way, Suite 400<br>Dallas, TX 75201, USA</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+18005550199">+1 (800) 555-0199</a>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope"></i>
+                        <a href="mailto:bookings@mtasolovan.com">bookings@mtasolovan.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p>&copy; 2026 MTA Solo Van. All Rights Reserved. Part of MTA Holdings.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
