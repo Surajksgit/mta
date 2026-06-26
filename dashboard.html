@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View and manage your active solo passenger van rentals, chauffeur bookings, and account profile details on your MTA Travels dashboard.">
+    <title>MTA Travels | Client Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom JS -->
+    <script type="module" src="dashboard.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">MTA</span> Travels
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+            </nav>
+            <div id="userStatus" class="user-status-container hidden">
+                <span id="userPhoneNumber" class="user-phone"></span>
+                <button id="logoutBtn" class="btn btn-xs btn-outline-logout">Logout</button>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Section -->
+    <section class="dashboard-page-section">
+        <div class="container">
+            
+            <!-- Dashboard Greeting Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-greeting">
+                    <h3><i class="fa-solid fa-chart-line"></i> Client Dashboard</h3>
+                    <p id="dashboardWelcomeText">Welcome back, loading...</p>
+                </div>
+                <div class="dashboard-actions">
+                    <a href="index.html#booking" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> Book New Journey
+                    </a>
+                    <button id="dashboardLogoutBtn" class="btn btn-outline btn-outline-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Two Column Dashboard Grid -->
+            <div class="dashboard-layout-grid">
+                
+                <!-- Left: Profile settings -->
+                <div class="profile-settings-card">
+                    <h4><i class="fa-solid fa-user-pen"></i> Edit Profile Details</h4>
+                    <p>Update your details below to automatically populate future van bookings.</p>
+                    
+                    <form id="profileForm" class="booking-form" novalidate>
+                        <div class="form-group margin-bottom-md">
+                            <label for="profileName"><i class="fa-solid fa-user"></i> Full Name</label>
+                            <input type="text" id="profileName" placeholder="e.g. John Doe" required>
+                            <span class="error-message" id="error-profileName">Full name is required.</span>
+                        </div>
+                        
+                        <div class="form-group margin-bottom-md">
+                            <label for="profileEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                            <input type="email" id="profileEmail" placeholder="e.g. john@example.com" required>
+                            <span class="error-message" id="error-profileEmail">Please enter a valid email address.</span>
+                        </div>
+                        
+                        <button type="submit" id="saveProfileBtn" class="btn btn-primary btn-lg btn-block margin-top-md">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Active Bookings Table -->
+                <div class="my-bookings-section">
+                    <h4><i class="fa-solid fa-calendar-check"></i> My Active Bookings</h4>
+                    <div class="table-responsive margin-top-md">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Service Type</th>
+                                    <th>Mode</th>
+                                    <th>Date & Time</th>
+                                    <th>Route</th>
+                                    <th>Est. Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myBookingsList">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Loading reservations...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

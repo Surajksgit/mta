@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Securely sign in to your MTA Travels client dashboard using phone verification. Check reservation statuses, update profiles, and request passenger van bookings.">
+    <title>MTA Travels | Client Login</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom JS -->
+    <script type="module" src="login.js" defer></script>
+</head>
+<body>
+
+    <div class="login-page-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <a href="index.html" class="login-logo">
+                <span class="logo-accent">MTA</span> Travels
+            </a>
+            
+            <div class="modal-icon auth-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            
+            <h2 class="login-card-title">Verification Required</h2>
+            <p class="login-card-desc">Enter your phone number to sign in or verify your bookings.</p>
+            
+            <div class="auth-box">
+                <!-- Phone input step -->
+                <div id="phoneStep" class="auth-step">
+                    <div class="form-group margin-bottom-md">
+                        <label for="authPhone"><i class="fa-solid fa-phone"></i> Mobile Phone Number (with Country Code)</label>
+                        <input type="tel" id="authPhone" placeholder="e.g. +1 555-000-0000" required>
+                        <span class="error-message" id="error-authPhone">Please enter a valid phone number.</span>
+                    </div>
+                    
+                    <!-- ReCAPTCHA target container -->
+                    <div id="recaptcha-container" class="recaptcha-wrapper margin-bottom-md"></div>
+                    
+                    <button id="sendOtpBtn" class="btn btn-primary btn-lg btn-block">
+                        <i class="fa-solid fa-paper-plane"></i> Send OTP Code
+                    </button>
+                </div>
+                
+                <!-- OTP validation code step -->
+                <div id="otpStep" class="auth-step hidden">
+                    <div class="form-group margin-bottom-md">
+                        <label for="otpCode"><i class="fa-solid fa-key"></i> 6-Digit Verification Code (OTP)</label>
+                        <input type="text" id="otpCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                        <span class="error-message" id="error-otpCode">Please enter the correct code.</span>
+                    </div>
+                    
+                    <div class="otp-actions">
+                        <button id="verifyOtpBtn" class="btn btn-primary btn-lg btn-block">
+                            <i class="fa-solid fa-circle-check"></i> Verify & Confirm
+                        </button>
+                        <button id="resendOtpBtn" class="btn btn-link btn-block margin-top-sm">Resend OTP</button>
+                    </div>
+                </div>
+            </div>
+
+            <a href="index.html" class="login-back-home">
+                <i class="fa-solid fa-arrow-left"></i> Back to Homepage
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
