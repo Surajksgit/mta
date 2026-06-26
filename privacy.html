@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MTA Travels Privacy Policy. Learn how we collect, protect, and use your data when reserving passenger van rentals or chauffeur services.">
+    <title>Privacy Policy | MTA Travels</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom JS (Firebase & Shared Auth) -->
+    <script type="module" src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">MTA</span> Travels
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html#home" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#booking" class="nav-link">Book Now</a>
+                <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                <a href="index.html#why-choose-us" class="nav-link">Why Us</a>
+            </nav>
+            <div id="userStatus" class="user-status-container hidden">
+                <span id="userPhoneNumber" class="user-phone"></span>
+                <a href="dashboard.html" id="headerDashboardBtn" class="btn btn-xs btn-outline">Dashboard</a>
+                <button id="logoutBtn" class="btn btn-xs btn-outline-logout">Logout</button>
+            </div>
+            <a href="login.html" id="headerLoginBtn" class="btn btn-outline nav-cta">Login</a>
+            <a href="index.html#booking" id="headerReserveBtn" class="btn btn-primary nav-cta hidden">Reserve Van</a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Page Title Header -->
+    <section class="page-title-section">
+        <div class="container">
+            <h1>Privacy Policy</h1>
+            <p>Last Updated: June 26, 2026</p>
+        </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="policy-section">
+        <div class="container policy-grid">
+            
+            <!-- Sticky Sidebar (Table of Contents) -->
+            <aside class="policy-sidebar">
+                <div class="policy-toc">
+                    <h5>On This Page</h5>
+                    <a href="#introduction" class="toc-link active">1. Introduction</a>
+                    <a href="#collection" class="toc-link">2. Information We Collect</a>
+                    <a href="#usage" class="toc-link">3. How We Use Data</a>
+                    <a href="#protection" class="toc-link">4. Data Security</a>
+                    <a href="#third-party" class="toc-link">5. Third Parties</a>
+                    <a href="#choices" class="toc-link">6. Your Rights</a>
+                    <a href="#contact" class="toc-link">7. Contact Information</a>
+                </div>
+            </aside>
+
+            <!-- Policy Text Content Card -->
+            <article class="policy-content-card">
+                
+                <section id="introduction">
+                    <h3>1. Introduction</h3>
+                    <p>Welcome to MTA Travels. We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our policy, or our practices with regards to your personal information, please contact us at bookings@mtasolovan.com.</p>
+                    <p>When you visit our website (including our main page, reservation forms, and dashboard) and use our services (luxury passenger van rentals and chauffeur services), you trust us with your personal information. We take your privacy very seriously. In this privacy notice, we describe our privacy policy. We seek to explain to you in the clearest way possible what information we collect, how we use it, and what rights you have in relation to it.</p>
+                </section>
+
+                <section id="collection">
+                    <h3>2. Information We Collect</h3>
+                    <p>We collect personal information that you voluntarily provide to us when registering on the website, expressing an interest in obtaining information about us or our products and services, or when participating in activities on the website.</p>
+                    <p>The personal information we collect depends on the context of your interactions with us, the choices you make, and the products and features you use. The personal information we collect can include the following:</p>
+                    <ul>
+                        <li><strong>Personal Identification Details:</strong> Full name, telephone number (used for verification via OTP), and email address.</li>
+                        <li><strong>Reservation Details:</strong> Pick-up locations, drop-off locations, rental dates, times, durations, and preferred service types.</li>
+                        <li><strong>Authentication Details:</strong> We use Firebase Authentication to secure your accounts. Your mobile phone number is verified using one-time passcode (OTP) validation.</li>
+                    </ul>
+                </section>
+
+                <section id="usage">
+                    <h3>3. How We Use Data</h3>
+                    <p>We use personal information collected via our website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.</p>
+                    <p>Specifically, we use the information we collect or receive:</p>
+                    <ul>
+                        <li><strong>To Facilitate Account Creation & Logon:</strong> We use phone numbers and Firebase authentication to enable users to log in securely and access their private dashboards.</li>
+                        <li><strong>To Process and Manage Bookings:</strong> We store your booking details (date, times, locations, and name) in our Firestore database to schedule our passenger vans and assign drivers.</li>
+                        <li><strong>To Send Administrative Notifications:</strong> We send booking receipts, reservation status updates, and support details via email using Web3Forms integration.</li>
+                        <li><strong>To Manage Profiles:</strong> Saved profile details automatically pre-fill future reservations to streamline your booking experience.</li>
+                    </ul>
+                </section>
+
+                <section id="protection">
+                    <h3>4. Data Security</h3>
+                    <p>We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, please also remember that we cannot guarantee that the internet itself is 100% secure.</p>
+                    <p>Your bookings, profile data, and security preferences are protected under Firebase security rules. Furthermore, all information you input into the booking platform is encrypted during transmission using Secure Socket Layer (SSL) technology.</p>
+                </section>
+
+                <section id="third-party">
+                    <h3>5. Third Parties</h3>
+                    <p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We work with standard third-party service providers to power MTA Travels:</p>
+                    <ul>
+                        <li><strong>Google Firebase:</strong> Used for secure user accounts (Firebase Auth) and cloud database storage (Firestore). Data is stored in secure, compliance-ready Google Cloud servers.</li>
+                        <li><strong>Web3Forms:</strong> Used to securely dispatch email reservation receipts and customer service notifications.</li>
+                    </ul>
+                </section>
+
+                <section id="choices">
+                    <h3>6. Your Rights</h3>
+                    <p>Depending on your location, you may have certain rights under applicable data protection laws. These may include the right to request access and obtain a copy of your personal information, to request rectification or erasure, or to restrict the processing of your personal information.</p>
+                    <p>You can manage and update your profile details directly from the Client Dashboard at any time. If you wish to delete your account or stored data permanently, please contact our support desk.</p>
+                </section>
+
+                <section id="contact">
+                    <h3>7. Contact Information</h3>
+                    <p>If you have questions or comments about this policy, you may contact our Data Protection Officer by email at bookings@mtasolovan.com or by mail at:</p>
+                    <p>
+                        <strong>MTA Travels</strong><br>
+                        1200 Premium Way, Suite 400<br>
+                        Dallas, TX 75201, USA<br>
+                        Phone: +1 (800) 555-0199
+                    </p>
+                </section>
+
+            </article>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col-about">
+                <a href="index.html" class="footer-logo"><span class="logo-accent">MTA</span> Travels</a>
+                <p class="footer-about-text">Providing high-end, reliable, and premium passenger van transport and rental services throughout the United States. Safety, convenience, and comfort are our core priorities.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="index.html#services">Airport Transfers</a></li>
+                    <li><a href="index.html#services">Local Van Rentals</a></li>
+                    <li><a href="index.html#services">Long-Distance Trips</a></li>
+                    <li><a href="index.html#fleet">Corporate Events</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#booking">Book Now</a></li>
+                    <li><a href="index.html#fleet">Our Fleet</a></li>
+                    <li><a href="index.html#why-choose-us">Customer Reviews</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col-contact">
+                <h4>Contact Details</h4>
+                <ul class="contact-info-list">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>1200 Premium Way, Suite 400<br>Dallas, TX 75201, USA</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+18005550199">+1 (800) 555-0199</a>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope"></i>
+                        <a href="mailto:bookings@mtasolovan.com">bookings@mtasolovan.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p>&copy; 2026 MTA Travels. All Rights Reserved. Part of MTA Holdings.</p>
+                <div class="footer-bottom-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scrollspy script for highlighting table of contents -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.policy-content-card section');
+            const navLinks = document.querySelectorAll('.toc-link');
+
+            function activeMenu() {
+                let len = sections.length;
+                while(--len && window.scrollY + 150 < sections[len].offsetTop) {}
+                navLinks.forEach(lt => lt.classList.remove('active'));
+                if (navLinks[len]) {
+                    navLinks[len].classList.add('active');
+                }
+            }
+            activeMenu();
+            window.addEventListener('scroll', activeMenu);
+        });
+    </script>
+</body>
+</html>

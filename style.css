@@ -1754,6 +1754,137 @@ body {
     padding: 4rem 0 6rem 0;
 }
 
+/* Policy & Terms Layout styling */
+.policy-section {
+    padding: 4rem 0 6rem 0;
+}
+
+.policy-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+}
+
+@media (min-width: 992px) {
+    .policy-grid {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
+.policy-sidebar {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .policy-sidebar {
+        display: block;
+        position: sticky;
+        top: 110px;
+        height: fit-content;
+    }
+}
+
+.policy-toc {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.policy-toc h5 {
+    font-family: var(--font-headings);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.toc-link {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.4rem 0;
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    transition: var(--transition-fast);
+}
+
+.toc-link:hover, .toc-link.active {
+    color: var(--accent-blue);
+    border-left-color: var(--accent-blue);
+    padding-left: 1rem;
+}
+
+.policy-content-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.policy-content-card section {
+    margin-bottom: 2.5rem;
+}
+
+.policy-content-card section:last-child {
+    margin-bottom: 0;
+}
+
+.policy-content-card h3 {
+    font-family: var(--font-headings);
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    scroll-margin-top: 100px; /* Offset for sticky header when scrolling to hash anchors */
+}
+
+.policy-content-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+    font-size: 0.975rem;
+}
+
+.policy-content-card ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.policy-content-card li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    font-size: 0.975rem;
+}
+
+/* Header section for documentation/policies */
+.page-title-section {
+    background: radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.08) 0%, transparent 80%), var(--primary-dark);
+    color: var(--text-light);
+    padding: 5rem 0;
+    text-align: center;
+}
+
+.page-title-section h1 {
+    font-family: var(--font-headings);
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.page-title-section p {
+    color: var(--accent-light);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 
 
 
