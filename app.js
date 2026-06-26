@@ -1,10 +1,393 @@
-/**
- * MTA Solo Van - Frontend Application Logic
- * Implements mobile navigation, interactive booking toggles, frontend validation,
- * and a simulated live database for calendar booking slot availability.
- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+ import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    onSnapshot,
+    doc,
+    setDoc,
+    getDoc,
+ } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+ import {
+    getAuth,
+    signInWithPhoneNumber,
+    RecaptchaVerifier,
+    onAuthStateChanged,
+    signOut,
+    updateProfile,
+ } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+ // Initialize Firebase with your console configuration
+ const firebaseConfig = {
+    apiKey: "AIzaSyDMhG9807L6o9WzjPvcyUOnjSgVBarB2EE",
+    authDomain: "mtatravels.firebaseapp.com",
+    projectId: "mtatravels",
+    storageBucket: "mtatravels.firebasestorage.app",
+    messagingSenderId: "41759449971",
+    appId: "1:41759449971:web:0e12e4477b60e0e6229b06"
+  };
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const bookingsCollection = collection(db, "bookings");
+const web3FormsAccessKey = "2b41e6e4-56bb-4ef2-b1dd-96f5544cf41b"; // Get your key from https://web3forms.com/
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Authentication State Variables ---
+    let currentUser = null;
+    let userProfile = { name: '', email: '' };
+    let confirmationResult = null;
+    let pendingBookingPayload = null;
+    let recaptchaVerifier = null;
+    let unsubscribePersonalBookings = null;
+
+    // --- Auth DOM Elements ---
+    const userStatus = document.getElementById('userStatus');
+    const userPhoneNumber = document.getElementById('userPhoneNumber');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const headerLoginBtn = document.getElementById('headerLoginBtn');
+    const headerReserveBtn = document.getElementById('headerReserveBtn');
+    
+    const authModal = document.getElementById('authModal');
+    const authModalCloseBtn = document.getElementById('authModalCloseBtn');
+    const authPhoneInput = document.getElementById('authPhone');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    
+    const phoneStep = document.getElementById('phoneStep');
+    const otpStep = document.getElementById('otpStep');
+    const otpCodeInput = document.getElementById('otpCode');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+
+    // --- Dashboard & Lock DOM Elements ---
+    const bookingLock = document.getElementById('bookingLock');
+    const lockLoginBtn = document.getElementById('lockLoginBtn');
+    const dashboardView = document.getElementById('dashboardView');
+    const dashboardWelcomeText = document.getElementById('dashboardWelcomeText');
+    const dashboardBookBtn = document.getElementById('dashboardBookBtn');
+    const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
+    const myBookingsList = document.getElementById('myBookingsList');
+    
+    const bookingFormCard = document.getElementById('bookingFormCard');
+    const bookingBackToDashboardBtn = document.getElementById('bookingBackToDashboardBtn');
+
+    // --- Profile DOM Elements ---
+    const profileModal = document.getElementById('profileModal');
+    const profileModalCloseBtn = document.getElementById('profileModalCloseBtn');
+    const profileNameInput = document.getElementById('profileName');
+    const profileEmailInput = document.getElementById('profileEmail');
+    const profileForm = document.getElementById('profileForm');
+    const dashboardEditProfileBtn = document.getElementById('dashboardEditProfileBtn');
+
+    // --- User Profile Sync Helper ---
+    async function fetchAndSyncProfile(user) {
+        if (!user) return;
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const data = userDocSnap.data();
+                userProfile.name = data.name || '';
+                userProfile.email = data.email || '';
+            } else {
+                userProfile.name = '';
+                userProfile.email = '';
+            }
+        } catch (error) {
+            console.error("Error fetching user profile from Firestore:", error);
+        }
+    }
+
+    // --- UI State Helper ---
+    function updateUIState(user) {
+        if (user) {
+            // User is Logged In
+            if (headerLoginBtn) headerLoginBtn.classList.add('hidden');
+            if (headerReserveBtn) headerReserveBtn.classList.remove('hidden');
+            
+            const displayGreetingName = userProfile.name || user.displayName || user.phoneNumber;
+            
+            if (userStatus) {
+                userPhoneNumber.textContent = displayGreetingName;
+                userStatus.classList.remove('hidden');
+            }
+            
+            if (bookingLock) bookingLock.classList.add('hidden');
+            
+            // If they aren't actively in the booking form card, show the dashboard
+            if (bookingFormCard && bookingFormCard.classList.contains('hidden')) {
+                if (dashboardView) {
+                    dashboardView.classList.remove('hidden');
+                    dashboardWelcomeText.textContent = `Welcome back, ${displayGreetingName}!`;
+                }
+            }
+            
+            // Autofill customer inputs
+            const phoneInput = document.getElementById('customerPhone');
+            if (phoneInput) phoneInput.value = user.phoneNumber;
+
+            const nameInput = document.getElementById('customerName');
+            if (nameInput && userProfile.name) {
+                nameInput.value = userProfile.name;
+            }
+
+            const emailInput = document.getElementById('customerEmail');
+            if (emailInput && userProfile.email) {
+                emailInput.value = userProfile.email;
+            }
+        } else {
+            // User is Logged Out
+            if (headerLoginBtn) headerLoginBtn.classList.remove('hidden');
+            if (headerReserveBtn) headerReserveBtn.classList.add('hidden');
+            if (userStatus) {
+                userPhoneNumber.textContent = '';
+                userStatus.classList.add('hidden');
+            }
+            
+            if (bookingLock) bookingLock.classList.remove('hidden');
+            if (dashboardView) dashboardView.classList.add('hidden');
+            if (bookingFormCard) bookingFormCard.classList.add('hidden');
+            
+            const phoneInput = document.getElementById('customerPhone');
+            if (phoneInput) phoneInput.value = '';
+
+            const nameInput = document.getElementById('customerName');
+            if (nameInput) nameInput.value = '';
+
+            const emailInput = document.getElementById('customerEmail');
+            if (emailInput) emailInput.value = '';
+            
+            if (unsubscribePersonalBookings) {
+                unsubscribePersonalBookings();
+                unsubscribePersonalBookings = null;
+            }
+        }
+    }
+
+    // --- Firebase Authentication Observer ---
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            await fetchAndSyncProfile(user);
+            updateUIState(user);
+            listenToPersonalBookings(user.uid);
+        } else {
+            currentUser = null;
+            userProfile.name = '';
+            userProfile.email = '';
+            updateUIState(null);
+        }
+    });
+
+    // Handle logout action
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to log out?")) {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error("Logout failed: ", error);
+                }
+            }
+        });
+    }
+
+    // Modal Close actions for Auth Modal
+    function closeAuthModal() {
+        authModal.classList.add('hidden');
+        phoneStep.classList.remove('hidden');
+        otpStep.classList.add('hidden');
+        otpCodeInput.value = '';
+        if (recaptchaVerifier) {
+            recaptchaVerifier.clear();
+            recaptchaVerifier = null;
+        }
+    }
+    
+    if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', closeAuthModal);
+    authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) closeAuthModal();
+    });
+
+    if (sendOtpBtn) {
+        sendOtpBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleSendOTP();
+        });
+    }
+
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleVerifyOTP();
+        });
+    }
+
+    if (resendOtpBtn) {
+        resendOtpBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            otpCodeInput.value = '';
+            phoneStep.classList.remove('hidden');
+            otpStep.classList.add('hidden');
+        });
+    }
+
+    // --- Header and Dashboard Buttons Binding ---
+    if (headerLoginBtn) {
+        headerLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModal.classList.remove('hidden');
+        });
+    }
+
+    if (lockLoginBtn) {
+        lockLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModal.classList.remove('hidden');
+        });
+    }
+
+    if (dashboardBookBtn) {
+        dashboardBookBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            dashboardView.classList.add('hidden');
+            bookingFormCard.classList.remove('hidden');
+        });
+    }
+
+    if (dashboardLogoutBtn) {
+        dashboardLogoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to log out?")) {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error("Sign out failed: ", error);
+                }
+            }
+        });
+    }
+
+    if (bookingBackToDashboardBtn) {
+        bookingBackToDashboardBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            bookingFormCard.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+        });
+    }
+
+    // --- Edit Profile Bindings ---
+    if (dashboardEditProfileBtn) {
+        dashboardEditProfileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (profileNameInput) profileNameInput.value = userProfile.name || '';
+            if (profileEmailInput) profileEmailInput.value = userProfile.email || '';
+            
+            // Clear validation errors
+            if (profileNameInput) profileNameInput.parentElement.classList.remove('invalid');
+            if (profileEmailInput) profileEmailInput.parentElement.classList.remove('invalid');
+            const errName = document.getElementById('error-profileName');
+            if (errName) errName.style.display = 'none';
+            const errEmail = document.getElementById('error-profileEmail');
+            if (errEmail) errEmail.style.display = 'none';
+            
+            profileModal.classList.remove('hidden');
+        });
+    }
+
+    if (profileModalCloseBtn) {
+        profileModalCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            profileModal.classList.add('hidden');
+        });
+    }
+
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) {
+            profileModal.classList.add('hidden');
+        }
+    });
+
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = profileNameInput.value.trim();
+            const email = profileEmailInput.value.trim();
+            
+            let isValid = true;
+            
+            isValid = validateField(
+                profileNameInput,
+                document.getElementById('error-profileName'),
+                name !== "",
+                "Full name is required."
+            ) && isValid;
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            isValid = validateField(
+                profileEmailInput,
+                document.getElementById('error-profileEmail'),
+                emailRegex.test(email),
+                "Please enter a valid email address."
+            ) && isValid;
+            
+            if (!isValid) return;
+            if (!currentUser) return;
+            
+            const saveBtn = document.getElementById('saveProfileBtn');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            }
+            
+            try {
+                // Update Firestore doc users/{uid}
+                const userDocRef = doc(db, "users", currentUser.uid);
+                await setDoc(userDocRef, {
+                    name: name,
+                    email: email,
+                    phone: currentUser.phoneNumber,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                
+                // Update local profile state
+                userProfile.name = name;
+                userProfile.email = email;
+                
+                // Update Auth Profile displayName
+                await updateProfile(currentUser, {
+                    displayName: name
+                });
+                
+                // Close modal & Update UI welcome greeting
+                profileModal.classList.add('hidden');
+                updateUIState(currentUser);
+                
+                // Also update form inputs if visible
+                const customerNameInput = document.getElementById('customerName');
+                if (customerNameInput) customerNameInput.value = name;
+                const customerEmailInput = document.getElementById('customerEmail');
+                if (customerEmailInput) customerEmailInput.value = email;
+                
+            } catch (error) {
+                console.error("Failed to save profile: ", error);
+                alert("Failed to save profile details. Please try again.");
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Profile Details';
+                }
+            }
+        });
+    }
+
     // --- DOM Elements ---
     const menuToggle = document.getElementById('menuToggle');
     const navMenu = document.getElementById('navMenu');
@@ -255,163 +638,298 @@ document.addEventListener('DOMContentLoaded', () => {
     serviceCategorySelect.addEventListener('change', handleBookingLayoutChange);
     bookingDurationInput.addEventListener('input', updatePriceEstimate);
 
-    // --- 4. Simulated Calendar Database Setup ---
-    // Default pre-seeded bookings to demonstrate collision checks
-    const defaultBookings = [
-        {
-            id: "MTA-8924",
-            name: "Alexander Mercer",
-            email: "alex.mercer@corp.com",
-            phone: "(214) 555-0142",
-            mode: "transport",
-            serviceCategory: "airport",
-            date: getFutureDateOffset(1), // Tomorrow
-            time: "10:00",
-            pickup: "DFW Airport Terminal D",
-            dropoff: "Omni Hotel Downtown Dallas",
-            price: "$150.00",
-            status: "Confirmed"
-        },
-        {
-            id: "MTA-3105",
-            name: "Catherine Vance",
-            email: "cvance@lifestyle.org",
-            phone: "(310) 555-9821",
-            mode: "rental",
-            serviceCategory: "local",
-            date: getFutureDateOffset(2), // Day after tomorrow
-            time: "14:30",
-            pickup: "Los Angeles Airport (LAX)",
-            dropoff: "N/A (Solo Rental)",
-            price: "$348.00",
-            status: "Confirmed"
+    // --- 4. Live Firestore Database Setup ---
+    function listenToPersonalBookings(userId) {
+        if (unsubscribePersonalBookings) {
+            unsubscribePersonalBookings();
         }
-    ];
 
-    // Helper to get offset dates
-    function getFutureDateOffset(daysOffset) {
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + daysOffset);
-        const y = targetDate.getFullYear();
-        const m = String(targetDate.getMonth() + 1).padStart(2, '0');
-        const d = String(targetDate.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        const q = query(
+            bookingsCollection,
+            where("userId", "==", userId)
+        );
+
+        unsubscribePersonalBookings = onSnapshot(q, (snapshot) => {
+            const bookings = [];
+            snapshot.forEach((doc) => {
+                bookings.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Sort by date then time
+            bookings.sort((a, b) => {
+                const dateCompare = a.date.localeCompare(b.date);
+                if (dateCompare !== 0) return dateCompare;
+                return a.time.localeCompare(b.time);
+            });
+
+            myBookingsList.innerHTML = '';
+            if (bookings.length === 0) {
+                myBookingsList.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No reservations booked yet. Click "+ Book New Journey" to get started.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const tr = document.createElement('tr');
+                const serviceLabel = booking.serviceCategory.charAt(0).toUpperCase() + booking.serviceCategory.slice(1);
+                const modeLabel = booking.mode === 'transport' ? 'Chauffeur Ride' : 'Van Rental';
+                const route = booking.mode === 'transport' ? `${booking.pickup} → ${booking.dropoff}` : `Pick-up: ${booking.pickup}`;
+
+                tr.innerHTML = `
+                    <td><strong>${booking.id.slice(0, 8).toUpperCase()}</strong></td>
+                    <td>${serviceLabel}</td>
+                    <td><span class="text-muted">${modeLabel}</span></td>
+                    <td>${booking.date} at <strong>${booking.time}</strong></td>
+                    <td><span style="font-size: 0.82rem;">${route}</span></td>
+                    <td><strong>${booking.price || '$0.00'}</strong></td>
+                    <td><span class="badge-status confirmed">${booking.status || 'Confirmed'}</span></td>
+                `;
+                myBookingsList.appendChild(tr);
+            });
+        }, (error) => {
+            console.error("Failed to load personal bookings: ", error);
+        });
     }
 
-    // Load bookings database
-    function getSimulatedDatabase() {
-        const stored = localStorage.getItem('mta_van_bookings');
-        if (!stored) {
-            localStorage.setItem('mta_van_bookings', JSON.stringify(defaultBookings));
-            return defaultBookings;
+    // --- 5. Firebase Live Availability APIs ---
+
+    /**
+     * Checks if a booking already exists at the chosen Date and Time.
+     */
+    async function checkSlotAvailability(date, time) {
+        try {
+            const q = query(
+                bookingsCollection, 
+                where("date", "==", date), 
+                where("time", "==", time)
+            );
+            const querySnapshot = await getDocs(q);
+            // Returns true if the slot is free (no matching document found)
+            return querySnapshot.empty;
+        } catch (error) {
+            console.error("Error checking availability: ", error);
+            throw error;
         }
-        return JSON.parse(stored);
     }
 
-    function saveToSimulatedDatabase(bookings) {
-        localStorage.setItem('mta_van_bookings', JSON.stringify(bookings));
+    /**
+     * Adds the booking metadata as a document in Firestore
+     */
+    async function bookSlot(bookingDetails) {
+        try {
+            const newBooking = {
+                ...bookingDetails,
+                status: "Confirmed",
+                createdAt: new Date().toISOString()
+            };
+            
+            const docRef = await addDoc(bookingsCollection, newBooking);
+            
+            // Return receipt details to display in the modal
+            return {
+                id: docRef.id.slice(0, 8).toUpperCase(), // Shortened ID for UI receipt
+                ...newBooking
+            };
+        } catch (error) {
+            console.error("Error saving booking: ", error);
+            throw error;
+        }
     }
 
-    // Render bookings table list
-    function renderBookingsTable() {
-        const bookings = getSimulatedDatabase();
-        bookingsList.innerHTML = '';
-
-        if (bookings.length === 0) {
-            bookingsList.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No reservations booked yet. Form submissions will appear here.</td>
-                </tr>
-            `;
+    /**
+     * Sends an email notification to the administrator containing booking details using Web3Forms.
+     */
+    async function sendEmailNotification(booking) {
+        if (web3FormsAccessKey === "YOUR_WEB3FORMS_ACCESS_KEY") {
+            console.warn("Web3Forms access key not set. Email notification skipped.");
             return;
         }
 
-        // Sort by date then time
-        const sortedBookings = [...bookings].sort((a, b) => {
-            const dateCompare = a.date.localeCompare(b.date);
-            if (dateCompare !== 0) return dateCompare;
-            return a.time.localeCompare(b.time);
-        });
+        const modeLabel = booking.mode === 'transport' ? 'Chauffeur Ride' : 'Van Rental';
+        const serviceLabel = booking.serviceCategory.charAt(0).toUpperCase() + booking.serviceCategory.slice(1);
 
-        sortedBookings.forEach(booking => {
-            const tr = document.createElement('tr');
+        const emailPayload = {
+            access_key: web3FormsAccessKey,
+            subject: `New Reservation Confirmation - ID: ${booking.id}`,
+            from_name: "MTA Travels Reservation System",
             
-            const serviceLabel = booking.serviceCategory.charAt(0).toUpperCase() + booking.serviceCategory.slice(1);
-            const modeLabel = booking.mode === 'transport' ? 'Chauffeur Ride' : 'Van Rental';
-            const route = booking.mode === 'transport' ? `${booking.pickup} → ${booking.dropoff}` : `Pick-up: ${booking.pickup}`;
-
-            tr.innerHTML = `
-                <td><strong>${booking.name}</strong></td>
-                <td>${serviceLabel}</td>
-                <td><span class="text-muted">${modeLabel}</span></td>
-                <td>${booking.date} at <strong>${booking.time}</strong></td>
-                <td><span style="font-size: 0.82rem;">${route}</span></td>
-                <td><strong>${booking.price || '$0.00'}</strong></td>
-                <td><span class="badge-status confirmed">${booking.status}</span></td>
-            `;
-            bookingsList.appendChild(tr);
-        });
-    }
-
-    // Reset database handler
-    if (clearBookingsBtn) {
-        clearBookingsBtn.addEventListener('click', () => {
-            localStorage.removeItem('mta_van_bookings');
-            // Re-initialize and render
-            getSimulatedDatabase();
-            renderBookingsTable();
-        });
-    }
-
-    // --- 5. Backend-Ready Availability APIs (Simulated) ---
-
-    /**
-     * HOOK FOR BACKEND: Availability Checker
-     * Replace this placeholder with a fetch() call to your server database.
-     * E.g., fetch(`/api/availability?date=${date}&time=${time}`)
-     * 
-     * Enforces the rule: If a date and time slot is already booked, prevent other users from selecting it.
-     * 
-     * @param {string} date - Format: YYYY-MM-DD
-     * @param {string} time - Format: HH:MM
-     * @returns {Promise<boolean>} True if slot is free, False if already booked.
-     */
-    async function checkSlotAvailability(date, time) {
-        // Simulate minor API roundtrip lag (500ms)
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        const bookings = getSimulatedDatabase();
-        // Check if there is an exact match for date and time.
-        // A real system might check slot ranges (e.g., block a 3-hour window). For simplicity, we check exact collisions here.
-        const collision = bookings.find(booking => booking.date === date && booking.time === time);
-        
-        return !collision; // Returns true if slot is available (no collision)
-    }
-
-    /**
-     * HOOK FOR BACKEND: Book Slot
-     * Replace this placeholder with a POST request to your backend database.
-     * E.g., fetch('/api/book', { method: 'POST', body: JSON.stringify(details) })
-     * 
-     * @param {object} bookingDetails - Complete booking metadata
-     * @returns {Promise<object>} Saved booking invoice details
-     */
-    async function bookSlot(bookingDetails) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const bookings = getSimulatedDatabase();
-        const newBooking = {
-            id: `MTA-${Math.floor(1000 + Math.random() * 9000)}`,
-            ...bookingDetails,
-            status: "Confirmed"
+            // Form fields that will show up in the email:
+            "Booking ID": booking.id,
+            "Client Name": booking.name,
+            "Client Email": booking.email,
+            "Client Phone": booking.phone,
+            "Booking Type": `${modeLabel} (${serviceLabel})`,
+            "Date & Time": `${booking.date} at ${booking.time}`,
+            "Pick-up Address": booking.pickup,
+            "Drop-off Address": booking.dropoff,
+            "Price Quote": booking.price,
+            "Submitted At": booking.createdAt
         };
 
-        bookings.push(newBooking);
-        saveToSimulatedDatabase(bookings);
-        return newBooking;
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(emailPayload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log("Email notification sent successfully via Web3Forms.");
+            } else {
+                console.error("Failed to send email via Web3Forms: ", result.message);
+            }
+        } catch (error) {
+            console.error("Error occurred while sending email: ", error);
+        }
     }
 
+    /**
+     * Initializes invisible ReCAPTCHA verifier for phone auth
+     */
+    function initRecaptcha() {
+        if (recaptchaVerifier) return;
+        
+        // Clear DOM element content to reset any internal Google reCAPTCHA state/iframes
+        const recaptchaContainer = document.getElementById('recaptcha-container');
+        if (recaptchaContainer) recaptchaContainer.innerHTML = '';
+
+        recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response) => {
+                // reCAPTCHA solved
+            }
+        });
+    }
+
+    /**
+     * Sends OTP code to user's phone number
+     */
+    async function handleSendOTP(phoneVal) {
+        const rawPhone = phoneVal || authPhoneInput.value.trim();
+        if (!rawPhone) {
+            validateField(authPhoneInput, document.getElementById('error-authPhone'), false, "Phone number is required.");
+            return;
+        }
+
+        // Normalize phone number to E.164 format (+1XXXXXXXXXX)
+        let phoneNumber = rawPhone.replace(/[^0-9+]/g, ''); // Remove spaces, hyphens, parentheses
+        if (!phoneNumber.startsWith('+')) {
+            phoneNumber = '+1' + phoneNumber; // Default to US country code if missing
+        }
+
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending SMS...';
+
+        try {
+            initRecaptcha();
+            confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+            
+            // Go to code entry step
+            phoneStep.classList.add('hidden');
+            otpStep.classList.remove('hidden');
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP Code';
+        } catch (error) {
+            console.error("Failed to send SMS: ", error);
+            const friendlyMessage = `Failed to send SMS. Reason: ${error.message || error.code || "unknown error"}`;
+            validateField(authPhoneInput, document.getElementById('error-authPhone'), false, friendlyMessage);
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send OTP Code';
+            
+            if (recaptchaVerifier) {
+                recaptchaVerifier.clear();
+                recaptchaVerifier = null;
+            }
+        }
+    }
+
+    /**
+     * Verifies the OTP code submitted by the user
+     */
+    async function handleVerifyOTP() {
+        const code = otpCodeInput.value.trim();
+        if (code.length !== 6) {
+            validateField(otpCodeInput, document.getElementById('error-otpCode'), false, "Code must be 6 digits.");
+            return;
+        }
+
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+
+        try {
+            const result = await confirmationResult.confirm(code);
+            currentUser = result.user;
+            
+            alert("Logged in successfully! Welcome to your dashboard.");
+            closeAuthModal();
+            
+            // If booking was waiting, submit it now!
+            if (pendingBookingPayload) {
+                await completeBookingSubmit(pendingBookingPayload);
+            }
+        } catch (error) {
+            console.error("OTP Verification failed: ", error);
+            const friendlyMessage = `Verification failed. Reason: ${error.message || error.code || "invalid code"}`;
+            validateField(otpCodeInput, document.getElementById('error-otpCode'), false, friendlyMessage);
+            verifyOtpBtn.disabled = false;
+            verifyOtpBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verify & Confirm Booking';
+        }
+    }
+
+    /**
+     * Complete booking form submission to Firestore & Web3Forms
+     */
+    async function completeBookingSubmit(payload) {
+        try {
+            submitBtn.disabled = true;
+            availabilityStatus.className = "availability-status available";
+            availabilityStatus.innerHTML = `
+                <div class="status-indicator"></div>
+                <span>Securing Booking...</span>
+            `;
+            availabilityStatus.classList.remove('hidden');
+
+            // Attach user UID
+            const finalPayload = {
+                ...payload,
+                userId: currentUser ? currentUser.uid : null
+            };
+
+            const confirmedBooking = await bookSlot(finalPayload);
+
+            availabilityStatus.classList.add('hidden');
+            submitBtn.disabled = false;
+
+            // Trigger Success Modal
+            showReceiptModal(confirmedBooking);
+
+            // Send Email Notification
+            sendEmailNotification(confirmedBooking);
+            
+            // Reset form
+            bookingForm.reset();
+            setBookingMode('transport');
+            pendingBookingPayload = null;
+
+            // Redirect back to dashboard
+            if (bookingFormCard) bookingFormCard.classList.add('hidden');
+            if (dashboardView) dashboardView.classList.remove('hidden');
+        } catch (error) {
+            console.error("Booking process failure: ", error);
+            availabilityStatus.className = "availability-status booked";
+            availabilityStatus.innerHTML = `
+                <div class="status-indicator"></div>
+                <span>Server communication error. Please try again.</span>
+            `;
+            submitBtn.disabled = false;
+        }
+    }
 
     // --- 6. Form Validation & Submission ---
 
@@ -609,21 +1127,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 price: priceTotalVal.textContent
             };
 
-            const confirmedBooking = await bookSlot(bookingPayload);
+            // Slot is available, proceed to check authentication
+            if (!currentUser) {
+                // User is not logged in. Defer slot booking.
+                availabilityStatus.classList.add('hidden');
+                submitBtn.disabled = false;
 
-            // Hide loading indicator
-            availabilityStatus.classList.add('hidden');
-            submitBtn.disabled = false;
+                // Stash booking data
+                pendingBookingPayload = bookingPayload;
+                
+                // Show authentication modal and start verification flow
+                authPhoneInput.value = customerPhone;
+                authModal.classList.remove('hidden');
+                handleSendOTP(customerPhone);
+                return;
+            }
 
-            // Trigger Success Modal
-            showReceiptModal(confirmedBooking);
-
-            // Refresh simulated DB table
-            renderBookingsTable();
-            
-            // Reset form inputs
-            bookingForm.reset();
-            setBookingMode('transport'); // Reset to default mode
+            // Already authenticated, proceed to complete submission
+            await completeBookingSubmit(bookingPayload);
 
         } catch (error) {
             console.error("Booking process failure", error);
@@ -706,6 +1227,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 8. Initial Execution ---
-    renderBookingsTable();
     setBookingMode('transport'); // Set initial layout and calculate initial price
 });

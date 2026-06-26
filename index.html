@@ -14,7 +14,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     <!-- Custom JS -->
-    <script src="app.js" defer></script>
+    <script type="module" src="app.js" defer></script>
+
 </head>
 <body>
 
@@ -31,7 +32,12 @@
                 <a href="#fleet" class="nav-link">Our Fleet</a>
                 <a href="#why-choose-us" class="nav-link">Why Us</a>
             </nav>
-            <a href="#booking" class="btn btn-primary nav-cta">Reserve Van</a>
+            <div id="userStatus" class="user-status-container hidden">
+                <span id="userPhoneNumber" class="user-phone"></span>
+                <button id="logoutBtn" class="btn btn-xs btn-outline-logout">Logout</button>
+            </div>
+            <button id="headerLoginBtn" class="btn btn-outline nav-cta">Login</button>
+            <a href="#booking" id="headerReserveBtn" class="btn btn-primary nav-cta hidden">Reserve Van</a>
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -84,143 +90,178 @@
                 <p class="section-subtitle">Secure your date and time in just a few clicks. Check real-time availability instantly below.</p>
             </div>
 
-            <!-- Booking Card Container -->
-            <div class="booking-card">
-                <!-- Toggle Mode Selector -->
-                <div class="booking-toggle-container">
-                    <button class="booking-toggle-btn active" id="toggleTransport" data-mode="transport">
-                        <i class="fa-solid fa-route"></i> Chauffeur Transportation
-                    </button>
-                    <button class="booking-toggle-btn" id="toggleRental" data-mode="rental">
-                        <i class="fa-solid fa-car-side"></i> Van Rental (Solo)
-                    </button>
+            <!-- Logged-Out Lock Overlay (Shown when logged out) -->
+            <div id="bookingLock" class="booking-lock-card">
+                <div class="lock-icon">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-
-                <form id="bookingForm" class="booking-form" novalidate>
-                    <!-- Row 1: Service Type & Details -->
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="serviceCategory"><i class="fa-solid fa-tags"></i> Service Type</label>
-                            <select id="serviceCategory" name="serviceCategory" required>
-                                <option value="" disabled selected>Select a Service</option>
-                                <option value="airport">Airport Pick-up / Drop-off</option>
-                                <option value="local">Local Day Rental / Events</option>
-                                <option value="long-distance">Long-Distance Trip</option>
-                            </select>
-                            <span class="error-message" id="error-serviceCategory">Please select a service type.</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bookingDate"><i class="fa-solid fa-calendar-days"></i> Select Date</label>
-                            <input type="date" id="bookingDate" name="bookingDate" required>
-                            <span class="error-message" id="error-bookingDate">Please select a future date.</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bookingTime"><i class="fa-solid fa-clock"></i> Preferred Time</label>
-                            <input type="time" id="bookingTime" name="bookingTime" required>
-                            <span class="error-message" id="error-bookingTime">Please select a valid time slot.</span>
-                        </div>
-
-                        <div class="form-group" id="durationGroup">
-                            <label for="bookingDuration" id="durationLabel"><i class="fa-solid fa-hourglass-half"></i> Duration</label>
-                            <input type="number" id="bookingDuration" name="bookingDuration" min="1" value="1" required>
-                            <span class="error-message" id="error-bookingDuration">Please enter a valid duration.</span>
-                        </div>
-                    </div>
-
-                    <!-- Row 2: Location Inputs (Dynamic) -->
-                    <div class="form-grid margin-top-md">
-                        <div class="form-group col-span-2" id="pickupGroup">
-                            <label for="pickupAddress"><i class="fa-solid fa-location-dot"></i> Pick-up Address</label>
-                            <input type="text" id="pickupAddress" name="pickupAddress" placeholder="e.g. 123 Main St, Dallas, TX or DFW Airport Terminal D" required>
-                            <span class="error-message" id="error-pickupAddress">Pick-up location is required.</span>
-                        </div>
-
-                        <div class="form-group col-span-2" id="dropoffGroup">
-                            <label for="dropoffAddress"><i class="fa-solid fa-flag-checkered"></i> Drop-off Address</label>
-                            <input type="text" id="dropoffAddress" name="dropoffAddress" placeholder="e.g. Hotel, Office, or Destination Address" required>
-                            <span class="error-message" id="error-dropoffAddress">Drop-off location is required.</span>
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Customer Information -->
-                    <div class="form-grid margin-top-md">
-                        <div class="form-group">
-                            <label for="customerName"><i class="fa-solid fa-user"></i> Full Name</label>
-                            <input type="text" id="customerName" name="customerName" placeholder="John Doe" required>
-                            <span class="error-message" id="error-customerName">Full name is required.</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="customerEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
-                            <input type="email" id="customerEmail" name="customerEmail" placeholder="john@example.com" required>
-                            <span class="error-message" id="error-customerEmail">Please enter a valid email.</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="customerPhone"><i class="fa-solid fa-phone"></i> Phone Number</label>
-                            <input type="tel" id="customerPhone" name="customerPhone" placeholder="(555) 000-0000" required>
-                            <span class="error-message" id="error-customerPhone">Please enter a valid phone number.</span>
-                        </div>
-                    </div>
-
-                    <!-- Price Estimate Box -->
-                    <div class="price-estimate-box" id="priceEstimateBox">
-                        <div class="price-detail">
-                            <span class="price-detail-label">Base Rate:</span>
-                            <span class="price-detail-val" id="priceBaseVal">$0.00</span>
-                        </div>
-                        <div class="price-detail" id="priceFactorRow">
-                            <span class="price-detail-label" id="priceFactorLabel">Factor:</span>
-                            <span class="price-detail-val" id="priceFactorVal">$0.00</span>
-                        </div>
-                        <div class="price-total">
-                            <span class="price-total-label">Estimated Total:</span>
-                            <span class="price-total-val" id="priceTotalVal">$0.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Availability Checker Status & Submit -->
-                    <div class="booking-footer margin-top-lg">
-                        <div id="availabilityStatus" class="availability-status hidden">
-                            <div class="status-indicator"></div>
-                            <span class="status-text">Checking live slots...</span>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
-                            <i class="fa-solid fa-calendar-check"></i> Book Reservation
-                        </button>
-                    </div>
-                </form>
+                <h3>Reservation Form Locked</h3>
+                <p>To view our premium solo-van rates, check live slot availability, and book a journey, please log in with your phone number.</p>
+                <button id="lockLoginBtn" class="btn btn-primary btn-lg margin-top-md">
+                    <i class="fa-solid fa-phone"></i> Login with Phone Number
+                </button>
             </div>
 
-            <!-- Booking Management Panel (For testing availability & localStorage simulation) -->
-            <div class="booking-management-panel margin-top-xl">
-                <div class="panel-header">
-                    <h3><i class="fa-solid fa-database"></i> Live Simulated Calendar Database</h3>
-                    <button class="btn btn-xs btn-outline" id="clearBookingsBtn">Reset Calendar Slots</button>
+            <!-- User Dashboard View (Shown when logged in) -->
+            <div id="dashboardView" class="dashboard-card hidden">
+                <div class="dashboard-header">
+                    <div class="dashboard-greeting">
+                        <h3><i class="fa-solid fa-chart-line"></i> Client Dashboard</h3>
+                        <div class="welcome-profile-wrapper">
+                            <span id="dashboardWelcomeText">Welcome back, loading...</span>
+                            <button id="dashboardEditProfileBtn" class="btn-edit-profile"><i class="fa-solid fa-user-gear"></i> Edit Profile</button>
+                        </div>
+                    </div>
+                    <div class="dashboard-actions">
+                        <button id="dashboardBookBtn" class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i> Book New Journey
+                        </button>
+                        <button id="dashboardLogoutBtn" class="btn btn-outline btn-outline-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
                 </div>
-                <p class="panel-desc">Because this is a static site, we simulate checking a live database. To test a booking collision error, book a slot below, then try to submit another reservation for the exact same date and time.</p>
-                <div class="table-responsive">
-                    <table class="bookings-table">
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Service Type</th>
-                                <th>Mode</th>
-                                <th>Date & Time</th>
-                                <th>Route</th>
-                                <th>Est. Price</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookingsList">
-                            <!-- Populated dynamically by app.js -->
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">No reservations booked yet. Form submissions will appear here.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <div class="my-bookings-section margin-top-lg">
+                    <h4><i class="fa-solid fa-calendar-check"></i> My Active Bookings</h4>
+                    <div class="table-responsive margin-top-md">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Service Type</th>
+                                    <th>Mode</th>
+                                    <th>Date & Time</th>
+                                    <th>Route</th>
+                                    <th>Est. Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myBookingsList">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No reservations booked yet. Click "+ Book New Journey" to get started.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form Card (Hidden by default, shown when clicking "+ Book New Journey") -->
+            <div id="bookingFormCard" class="hidden">
+                <div class="booking-card-back-nav">
+                    <button id="bookingBackToDashboardBtn" class="btn btn-outline">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+                
+                <div class="booking-card margin-top-md">
+                    <!-- Toggle Mode Selector -->
+                    <div class="booking-toggle-container">
+                        <button class="booking-toggle-btn active" id="toggleTransport" data-mode="transport">
+                            <i class="fa-solid fa-route"></i> Chauffeur Transportation
+                        </button>
+                        <button class="booking-toggle-btn" id="toggleRental" data-mode="rental">
+                            <i class="fa-solid fa-car-side"></i> Van Rental (Solo)
+                        </button>
+                    </div>
+
+                    <form id="bookingForm" class="booking-form" novalidate>
+                        <!-- Row 1: Service Type & Details -->
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="serviceCategory"><i class="fa-solid fa-tags"></i> Service Type</label>
+                                <select id="serviceCategory" name="serviceCategory" required>
+                                    <option value="" disabled selected>Select a Service</option>
+                                    <option value="airport">Airport Pick-up / Drop-off</option>
+                                    <option value="local">Local Day Rental / Events</option>
+                                    <option value="long-distance">Long-Distance Trip</option>
+                                </select>
+                                <span class="error-message" id="error-serviceCategory">Please select a service type.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookingDate"><i class="fa-solid fa-calendar-days"></i> Select Date</label>
+                                <input type="date" id="bookingDate" name="bookingDate" required>
+                                <span class="error-message" id="error-bookingDate">Please select a future date.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookingTime"><i class="fa-solid fa-clock"></i> Preferred Time</label>
+                                <input type="time" id="bookingTime" name="bookingTime" required>
+                                <span class="error-message" id="error-bookingTime">Please select a valid time slot.</span>
+                            </div>
+
+                            <div class="form-group" id="durationGroup">
+                                <label for="bookingDuration" id="durationLabel"><i class="fa-solid fa-hourglass-half"></i> Duration</label>
+                                <input type="number" id="bookingDuration" name="bookingDuration" min="1" value="1" required>
+                                <span class="error-message" id="error-bookingDuration">Please enter a valid duration.</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Location Inputs (Dynamic) -->
+                        <div class="form-grid margin-top-md">
+                            <div class="form-group col-span-2" id="pickupGroup">
+                                <label for="pickupAddress"><i class="fa-solid fa-location-dot"></i> Pick-up Address</label>
+                                <input type="text" id="pickupAddress" name="pickupAddress" placeholder="e.g. 123 Main St, Dallas, TX or DFW Airport Terminal D" required>
+                                <span class="error-message" id="error-pickupAddress">Pick-up location is required.</span>
+                            </div>
+
+                            <div class="form-group col-span-2" id="dropoffGroup">
+                                <label for="dropoffAddress"><i class="fa-solid fa-flag-checkered"></i> Drop-off Address</label>
+                                <input type="text" id="dropoffAddress" name="dropoffAddress" placeholder="e.g. Hotel, Office, or Destination Address" required>
+                                <span class="error-message" id="error-dropoffAddress">Drop-off location is required.</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Customer Information -->
+                        <div class="form-grid margin-top-md">
+                            <div class="form-group">
+                                <label for="customerName"><i class="fa-solid fa-user"></i> Full Name</label>
+                                <input type="text" id="customerName" name="customerName" placeholder="John Doe" required>
+                                <span class="error-message" id="error-customerName">Full name is required.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customerEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                                <input type="email" id="customerEmail" name="customerEmail" placeholder="john@example.com" required>
+                                <span class="error-message" id="error-customerEmail">Please enter a valid email.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customerPhone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+                                <input type="tel" id="customerPhone" name="customerPhone" placeholder="(555) 000-0000" required>
+                                <span class="error-message" id="error-customerPhone">Please enter a valid phone number.</span>
+                            </div>
+                        </div>
+
+                        <!-- Price Estimate Box -->
+                        <div class="price-estimate-box" id="priceEstimateBox">
+                            <div class="price-detail">
+                                <span class="price-detail-label">Base Rate:</span>
+                                <span class="price-detail-val" id="priceBaseVal">$0.00</span>
+                            </div>
+                            <div class="price-detail" id="priceFactorRow">
+                                <span class="price-detail-label" id="priceFactorLabel">Factor:</span>
+                                <span class="price-detail-val" id="priceFactorVal">$0.00</span>
+                            </div>
+                            <div class="price-total">
+                                <span class="price-total-label">Estimated Total:</span>
+                                <span class="price-total-val" id="priceTotalVal">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Availability Checker Status & Submit -->
+                        <div class="booking-footer margin-top-lg">
+                            <div id="availabilityStatus" class="availability-status hidden">
+                                <div class="status-indicator"></div>
+                                <span class="status-text">Checking live slots...</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
+                                <i class="fa-solid fa-calendar-check"></i> Book Reservation
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -411,6 +452,84 @@
             <div class="modal-actions">
                 <button class="btn btn-primary" id="modalOkBtn">Done</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Phone Authentication Modal -->
+    <div id="authModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button class="modal-close" id="authModalCloseBtn">&times;</button>
+            <div class="modal-icon auth-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="modal-title">Verification Required</h3>
+            <p class="modal-desc">Please verify your phone number to complete the booking slot reservation.</p>
+            
+            <div class="auth-box">
+                <!-- Phone input step -->
+                <div id="phoneStep" class="auth-step">
+                    <div class="form-group margin-bottom-md">
+                        <label for="authPhone"><i class="fa-solid fa-phone"></i> Mobile Phone Number (with Country Code)</label>
+                        <input type="tel" id="authPhone" placeholder="e.g. +1 555-000-0000" required>
+                        <span class="error-message" id="error-authPhone">Please enter a valid phone number.</span>
+                    </div>
+                    
+                    <!-- ReCAPTCHA target container -->
+                    <div id="recaptcha-container" class="recaptcha-wrapper margin-bottom-md"></div>
+                    
+                    <button id="sendOtpBtn" class="btn btn-primary btn-lg btn-block">
+                        <i class="fa-solid fa-paper-plane"></i> Send OTP Code
+                    </button>
+                </div>
+                
+                <!-- OTP validation code step -->
+                <div id="otpStep" class="auth-step hidden">
+                    <div class="form-group margin-bottom-md">
+                        <label for="otpCode"><i class="fa-solid fa-key"></i> 6-Digit Verification Code (OTP)</label>
+                        <input type="text" id="otpCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                        <span class="error-message" id="error-otpCode">Please enter the correct code.</span>
+                    </div>
+                    
+                    <div class="otp-actions">
+                        <button id="verifyOtpBtn" class="btn btn-primary btn-lg btn-block">
+                            <i class="fa-solid fa-circle-check"></i> Verify & Confirm Booking
+                        </button>
+                        <button id="resendOtpBtn" class="btn btn-link btn-block margin-top-sm">Resend OTP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button class="modal-close" id="profileModalCloseBtn">&times;</button>
+            <div class="modal-icon auth-icon">
+                <i class="fa-solid fa-user-pen"></i>
+            </div>
+            <h3 class="modal-title">Edit Profile Details</h3>
+            <p class="modal-desc">Update your name and email to autofill future booking requests.</p>
+            
+            <form id="profileForm" class="booking-form margin-top-md" novalidate>
+                <div class="form-group margin-bottom-md">
+                    <label for="profileName"><i class="fa-solid fa-user"></i> Full Name</label>
+                    <input type="text" id="profileName" placeholder="e.g. John Doe" required>
+                    <span class="error-message" id="error-profileName">Full name is required.</span>
+                </div>
+                
+                <div class="form-group margin-bottom-md">
+                    <label for="profileEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <input type="email" id="profileEmail" placeholder="e.g. john@example.com" required>
+                    <span class="error-message" id="error-profileEmail">Please enter a valid email address.</span>
+                </div>
+                
+                <div class="modal-actions margin-top-lg">
+                    <button type="submit" id="saveProfileBtn" class="btn btn-primary btn-lg btn-block">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
