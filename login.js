@@ -1,23 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { auth } from "./firebase-config.js";
 import {
-   getAuth,
    signInWithPhoneNumber,
    RecaptchaVerifier,
    onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-
-// Initialize Firebase
-const firebaseConfig = {
-   apiKey: "AIzaSyDMhG9807L6o9WzjPvcyUOnjSgVBarB2EE",
-   authDomain: "mtatravels.firebaseapp.com",
-   projectId: "mtatravels",
-   storageBucket: "mtatravels.firebasestorage.app",
-   messagingSenderId: "41759449971",
-   appId: "1:41759449971:web:0e12e4477b60e0e6229b06"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 // Global Toast System
 function showToast(message, type = 'success') {

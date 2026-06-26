@@ -1,6 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { auth, db } from "./firebase-config.js";
 import {
-   getFirestore,
    collection,
    addDoc,
    getDocs,
@@ -10,26 +9,12 @@ import {
    getDoc,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import {
-   getAuth,
    onAuthStateChanged,
    signOut,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-// Initialize Firebase
-const firebaseConfig = {
-   apiKey: "AIzaSyDMhG9807L6o9WzjPvcyUOnjSgVBarB2EE",
-   authDomain: "mtatravels.firebaseapp.com",
-   projectId: "mtatravels",
-   storageBucket: "mtatravels.firebasestorage.app",
-   messagingSenderId: "41759449971",
-   appId: "1:41759449971:web:0e12e4477b60e0e6229b06"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
 const bookingsCollection = collection(db, "bookings");
-const web3FormsAccessKey = "2b41e6e4-56bb-4ef2-b1dd-96f5544cf41b";
+const web3FormsAccessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 
 // Global Toast System
 function showToast(message, type = 'success') {
