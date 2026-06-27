@@ -1885,6 +1885,615 @@ body {
     font-weight: 500;
 }
 
+/* ==========================================
+   Premium Dashboard UI Styling (Minimalist)
+   ========================================== */
+
+.dashboard-page-section {
+    padding: 3rem 0 5rem 0;
+    background-color: var(--bg-light);
+}
+
+/* Enhanced Greeting Header Card (Minimalist) */
+.dashboard-header {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-greeting h3 {
+    font-family: var(--font-headings);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.dashboard-greeting p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.15rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Minimalist Stats Row */
+.dashboard-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.stats-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-family: var(--font-headings);
+}
+
+.stats-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    font-family: var(--font-headings);
+}
+
+/* Two Column Layout Grid */
+.dashboard-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 992px) {
+    .dashboard-layout-grid {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+/* Minimalist Profile Card */
+.profile-settings-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    box-shadow: none;
+    height: fit-content;
+}
+
+.profile-settings-card h4 {
+    font-family: var(--font-headings);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-settings-card h4 i {
+    color: var(--accent-blue);
+}
+
+.profile-settings-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* Inputs styled with a light gray fill focusing into standard corporate colors */
+.profile-settings-card form .form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    transition: all var(--transition-fast);
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+}
+
+.profile-settings-card form .form-group input:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background-color: #ffffff;
+}
+
+/* Active Bookings Card Container (Minimalist) */
+.my-bookings-section {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.my-bookings-section h4 {
+    font-family: var(--font-headings);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 0.35rem;
+}
+
+/* Table Wrapper for horizontal scroll on mobile */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    margin-top: 1rem;
+}
+
+/* Custom Table Layout */
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+    min-width: 700px;
+}
+
+.bookings-table th {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    font-family: var(--font-headings);
+    font-weight: 700;
+    padding: 1rem 1.25rem;
+    border-bottom: 1.5px solid var(--border-color);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.bookings-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.bookings-table tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.bookings-table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.02);
+}
+
+.bookings-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Minimalist Status Badges */
+.badge-status {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    text-align: center;
+}
+
+.badge-status.confirmed {
+    background-color: rgba(16, 185, 129, 0.08);
+    color: var(--success);
+    border-color: rgba(16, 185, 129, 0.12);
+}
+
+.badge-status.pending {
+    background-color: rgba(245, 158, 11, 0.08);
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.12);
+}
+
+.badge-status.cancelled {
+    background-color: rgba(239, 68, 68, 0.08);
+    color: var(--error);
+    border-color: rgba(239, 68, 68, 0.12);
+}
+
+/* Danger / Cancel Button Styles */
+.btn-outline-danger {
+    background-color: transparent;
+    border: 1px solid var(--error);
+    color: var(--error);
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--error);
+    color: #ffffff;
+}
+
+.btn-danger {
+    background-color: var(--error);
+    border: 1px solid var(--error);
+    color: #ffffff;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626; /* Darker red */
+    border-color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding: 1.5rem;
+    }
+
+    /* Transform table into mobile cards */
+    .table-responsive {
+        border: none;
+        margin-top: 1rem;
+    }
+
+    .bookings-table {
+        min-width: 0 !important;
+    }
+
+    .bookings-table, 
+    .bookings-table thead, 
+    .bookings-table tbody, 
+    .bookings-table th, 
+    .bookings-table td, 
+    .bookings-table tr { 
+        display: block; 
+    }
+    
+    /* Hide headers visually but keep accessibility active */
+    .bookings-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    /* Style table rows as standalone cards */
+    .bookings-table tr { 
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 1.25rem;
+        padding: 1.25rem;
+        background: var(--bg-light);
+        box-shadow: none;
+        transition: transform var(--transition-fast);
+    }
+
+    .bookings-table tr:hover {
+        background: #ffffff;
+        border-color: var(--accent-light);
+    }
+    
+    .bookings-table td { 
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04); 
+        position: relative;
+        padding: 0.65rem 0;
+        padding-left: 45%; 
+        text-align: right;
+        font-size: 0.88rem;
+    }
+    
+    .bookings-table td:last-child {
+        border-bottom: none;
+        padding-bottom: 0.25rem;
+    }
+
+    .bookings-table td:first-child {
+        padding-top: 0.25rem;
+    }
+    
+    /* Label each field on the left using content */
+    .bookings-table td:before { 
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        width: 40%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 700;
+        font-family: var(--font-headings);
+        color: var(--text-secondary);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .bookings-table td:nth-of-type(1):before { content: "ID"; }
+    .bookings-table td:nth-of-type(2):before { content: "Type"; }
+    .bookings-table td:nth-of-type(3):before { content: "Mode"; }
+    .bookings-table td:nth-of-type(4):before { content: "Date & Time"; }
+    .bookings-table td:nth-of-type(5):before { content: "Route"; }
+    .bookings-table td:nth-of-type(6):before { content: "Price"; }
+    .bookings-table td:nth-of-type(7):before { content: "Status"; }
+    .bookings-table td:nth-of-type(8):before { content: "Action"; }
+}
+
+@media (max-width: 480px) {
+    .dashboard-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .dashboard-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+
+/* ==========================================
+   Premium Contact Us UI Styling
+   ========================================== */
+
+.contact-section {
+    padding: 4rem 0 6rem 0;
+    background-color: var(--bg-light);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+@media (min-width: 992px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Contact Info Column styling */
+.contact-info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-info-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.contact-info-card h4 {
+    font-family: var(--font-headings);
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+
+.contact-info-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.contact-info-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background-color: var(--accent-glow);
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.info-details h5 {
+    font-family: var(--font-headings);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+}
+
+.info-details a, .info-details span {
+    font-size: 1.05rem;
+    color: var(--primary-dark);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.info-details a:hover {
+    color: var(--accent-blue);
+}
+
+/* Styled Map Mock Card */
+.contact-map-mock {
+    background: radial-gradient(circle at 80% 20%, rgba(96, 165, 250, 0.05) 0%, transparent 60%), #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 250px;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-map-mock::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(var(--border-color) 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    opacity: 0.4;
+    z-index: 1;
+}
+
+.map-mock-bg {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.map-mock-bg i {
+    font-size: 3rem;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.map-mock-bg h5 {
+    font-family: var(--font-headings);
+    font-size: 1.25rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.map-mock-bg span {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* Contact Form Card styling */
+.contact-form-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.contact-form-card h4 {
+    font-family: var(--font-headings);
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+
+.contact-form-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.contact-form-card textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    background-color: var(--bg-light);
+    resize: vertical;
+}
+
+.contact-form-card textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    background-color: #ffffff;
+}
+
+/* User Status Container & Profile Button */
+.user-status-container {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.profile-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-blue);
+    font-size: 1.35rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: var(--transition-fast);
+    vertical-align: middle;
+}
+
+.profile-icon-btn:hover {
+    color: var(--primary-blue);
+    background-color: var(--accent-glow);
+}
+
+
+
+
+
+
 
 
 

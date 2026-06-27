@@ -28,9 +28,13 @@
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                <a href="contact.html" class="nav-link">Contact</a>
             </nav>
             <div id="userStatus" class="user-status-container hidden">
                 <span id="userPhoneNumber" class="user-phone"></span>
+                <button id="profileEditBtn" class="profile-icon-btn" aria-label="Edit Profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                </button>
                 <button id="logoutBtn" class="btn btn-xs btn-outline-logout">Logout</button>
             </div>
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
@@ -46,48 +50,34 @@
             <!-- Dashboard Greeting Header -->
             <div class="dashboard-header">
                 <div class="dashboard-greeting">
-                    <h3><i class="fa-solid fa-chart-line"></i> Client Dashboard</h3>
+                    <h3><i class="fa-solid fa-chart-line"></i> Trip Dashboard</h3>
                     <p id="dashboardWelcomeText">Welcome back, loading...</p>
                 </div>
                 <div class="dashboard-actions">
                     <a href="index.html#booking" class="btn btn-primary">
                         <i class="fa-solid fa-plus"></i> Book New Journey
                     </a>
-                    <button id="dashboardLogoutBtn" class="btn btn-outline btn-outline-logout">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
                 </div>
             </div>
 
-            <!-- Two Column Dashboard Grid -->
-            <div class="dashboard-layout-grid">
-                
-                <!-- Left: Profile settings -->
-                <div class="profile-settings-card">
-                    <h4><i class="fa-solid fa-user-pen"></i> Edit Profile Details</h4>
-                    <p>Update your details below to automatically populate future van bookings.</p>
-                    
-                    <form id="profileForm" class="booking-form" novalidate>
-                        <div class="form-group margin-bottom-md">
-                            <label for="profileName"><i class="fa-solid fa-user"></i> Full Name</label>
-                            <input type="text" id="profileName" placeholder="e.g. John Doe" required>
-                            <span class="error-message" id="error-profileName">Full name is required.</span>
-                        </div>
-                        
-                        <div class="form-group margin-bottom-md">
-                            <label for="profileEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
-                            <input type="email" id="profileEmail" placeholder="e.g. john@example.com" required>
-                            <span class="error-message" id="error-profileEmail">Please enter a valid email address.</span>
-                        </div>
-                        
-                        <button type="submit" id="saveProfileBtn" class="btn btn-primary btn-lg btn-block margin-top-md">
-                            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
-                        </button>
-                    </form>
+            <!-- Stats Overview Row -->
+            <div class="dashboard-stats-row">
+                <div class="stats-card">
+                    <span class="stats-label">Active Rides</span>
+                    <span class="stats-value" id="statsActiveTrips">0</span>
                 </div>
+                <div class="stats-card">
+                    <span class="stats-label">Total Spent</span>
+                    <span class="stats-value" id="statsTotalSpent">$0.00</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-label">Profile Status</span>
+                    <span class="stats-value" id="statsProfileStatus">Incomplete</span>
+                </div>
+            </div>
 
-                <!-- Right: Active Bookings Table -->
-                <div class="my-bookings-section">
+            <!-- Active Bookings Table -->
+            <div class="my-bookings-section">
                     <h4><i class="fa-solid fa-calendar-check"></i> My Active Bookings</h4>
                     <div class="table-responsive margin-top-md">
                         <table class="bookings-table">
@@ -100,21 +90,57 @@
                                     <th>Route</th>
                                     <th>Est. Price</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="myBookingsList">
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted">Loading reservations...</td>
+                                    <td colspan="8" class="text-center text-muted">Loading reservations...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-            </div>
-
         </div>
     </section>
+
+    <!-- Cancel Booking Modal -->
+    <div id="cancelModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button id="closeCancelModal" class="modal-close">&times;</button>
+            <div class="modal-icon error" style="background-color: rgba(239, 68, 68, 0.1); color: var(--error);">
+                <i class="fa-solid fa-calendar-xmark"></i>
+            </div>
+            <h3 class="modal-title">Cancel Reservation</h3>
+            <p class="modal-desc">Please let us know why you are canceling your ride. This helps us improve our service.</p>
+            
+            <form id="cancelForm">
+                <input type="hidden" id="cancelBookingId">
+                <div class="form-group margin-bottom-md" style="text-align: left;">
+                    <label for="cancelReason" style="display: block; margin-bottom: 0.5rem; font-weight: 600;"><i class="fa-solid fa-circle-question"></i> Select Reason</label>
+                    <select id="cancelReason" required style="width: 100%; padding: 0.85rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: var(--font-body); background-color: var(--bg-light);">
+                        <option value="" disabled selected>-- Choose a reason --</option>
+                        <option value="Change of plans">Change of plans</option>
+                        <option value="Booked another service">Booked another service</option>
+                        <option value="Price was too high">Price was too high</option>
+                        <option value="Schedule conflict">Schedule conflict</option>
+                        <option value="Other">Other reason</option>
+                    </select>
+                </div>
+                
+                <div class="form-group margin-bottom-md hidden" id="otherReasonContainer" style="text-align: left;">
+                    <label for="otherReasonText" style="display: block; margin-bottom: 0.5rem; font-weight: 600;"><i class="fa-solid fa-pen"></i> Please specify</label>
+                    <input type="text" id="otherReasonText" placeholder="Please specify your reason" style="width: 100%; padding: 0.85rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: var(--font-body); background-color: var(--bg-light);">
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" id="btnAbortCancel" class="btn btn-outline" style="flex: 1;">Keep Booking</button>
+                    <button type="submit" id="btnConfirmCancel" class="btn btn-danger" style="flex: 1; background-color: var(--error); border-color: var(--error); color: #ffffff;">Confirm Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </body>
 </html>

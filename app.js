@@ -7,10 +7,12 @@ import {
    where,
    doc,
    getDoc,
+   setDoc,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import {
    onAuthStateChanged,
    signOut,
+   updateProfile,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 const bookingsCollection = collection(db, "bookings");
@@ -171,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentUser = user;
             await fetchAndSyncProfile(user);
             updateUIState(user);
+            setupProfileModalLogic(user);
         } else {
             currentUser = null;
             userProfile.name = '';
@@ -433,13 +436,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. Live Firestore Database Availability Checkers ---
     async function checkSlotAvailability(date, time) {
         try {
-            const q = query(
-                bookingsCollection, 
-                where("date", "==", date), 
-                where("time", "==", time)
-            );
-            const querySnapshot = await getDocs(q);
-            return querySnapshot.empty;
+            const slotId = `${date}_${time.replace(':', '-')}`;
+            const slotDocRef = doc(db, "booked_slots", slotId);
+            const slotDocSnap = await getDoc(slotDocRef);
+            return !slotDocSnap.exists();
         } catch (error) {
             console.error("Error checking availability: ", error);
             throw error;
@@ -455,6 +455,16 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             const docRef = await addDoc(bookingsCollection, newBooking);
+            
+            // Also write slot registration without customer details
+            const slotId = `${bookingDetails.date}_${bookingDetails.time.replace(':', '-')}`;
+            const slotDocRef = doc(db, "booked_slots", slotId);
+            await setDoc(slotDocRef, {
+                bookingId: docRef.id,
+                date: bookingDetails.date,
+                time: bookingDetails.time,
+                bookedAt: new Date().toISOString()
+            });
             
             return {
                 id: docRef.id.slice(0, 8).toUpperCase(),
@@ -817,6 +827,127 @@ document.addEventListener('DOMContentLoaded', () => {
         bookingModal.addEventListener('click', (e) => {
             if (e.target === bookingModal) closeModal();
         });
+    }
+
+    // Dynamically inject the profile edit modal HTML to the page body
+    function injectProfileModal() {
+        if (document.getElementById('profileModal')) return;
+        const modalHtml = `
+            <div id="profileModal" class="modal-overlay hidden">
+                <div class="modal-card">
+                    <button id="closeProfileModal" class="modal-close">&times;</button>
+                    <div class="modal-icon" style="background-color: rgba(59, 130, 246, 0.1); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 1rem auto; font-size: 1.8rem;">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </div>
+                    <h3 class="modal-title">Edit Profile Details</h3>
+                    <p class="modal-desc">Update your name and email to automatically customize future ride reservations.</p>
+                    
+                    <form id="profileModalForm" class="booking-form" style="margin-top: 1.5rem;">
+                        <div class="form-group margin-bottom-md" style="text-align: left;">
+                            <label for="profileModalName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;"><i class="fa-solid fa-user"></i> Full Name</label>
+                            <input type="text" id="profileModalName" placeholder="Your full name" required style="width: 100%; padding: 0.85rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: var(--font-body); background-color: var(--bg-light); color: var(--text-primary);">
+                        </div>
+                        <div class="form-group margin-bottom-md" style="text-align: left;">
+                            <label for="profileModalEmail" style="display: block; margin-bottom: 0.5rem; font-weight: 600;"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                            <input type="email" id="profileModalEmail" placeholder="Your email address" required style="width: 100%; padding: 0.85rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: var(--font-body); background-color: var(--bg-light); color: var(--text-primary);">
+                        </div>
+                        <button type="submit" id="btnSaveProfileModal" class="btn btn-primary btn-block" style="margin-top: 1.5rem; width: 100%;">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    // Bind event handlers and logic for the profile edit modal
+    function setupProfileModalLogic(user) {
+        injectProfileModal();
+        
+        const profileEditBtn = document.getElementById('profileEditBtn');
+        const profileModal = document.getElementById('profileModal');
+        const closeProfileModal = document.getElementById('closeProfileModal');
+        const profileModalForm = document.getElementById('profileModalForm');
+        const profileModalName = document.getElementById('profileModalName');
+        const profileModalEmail = document.getElementById('profileModalEmail');
+        const btnSaveProfileModal = document.getElementById('btnSaveProfileModal');
+        
+        if (profileEditBtn) {
+            profileEditBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (profileModalName) profileModalName.value = userProfile.name || "";
+                if (profileModalEmail) profileModalEmail.value = userProfile.email || "";
+                if (profileModal) profileModal.classList.remove('hidden');
+            });
+        }
+        
+        if (closeProfileModal) {
+            closeProfileModal.addEventListener('click', () => {
+                if (profileModal) profileModal.classList.add('hidden');
+            });
+        }
+        
+        if (profileModalForm) {
+            profileModalForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = profileModalName.value.trim();
+                const email = profileModalEmail.value.trim();
+                
+                if (!name || !email) {
+                    showToast("Please fill in all fields.", "error");
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showToast("Please enter a valid email address.", "error");
+                    return;
+                }
+                
+                if (btnSaveProfileModal) {
+                    btnSaveProfileModal.disabled = true;
+                    btnSaveProfileModal.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                }
+                
+                const profileData = {
+                    name: name,
+                    email: email,
+                    phone: user.phoneNumber,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                try {
+                    // Save to Firestore users/{uid}
+                    const userDocRef = doc(db, "users", user.uid);
+                    await setDoc(userDocRef, profileData, { merge: true });
+                    
+                    // Update cache state
+                    userProfile.name = name;
+                    userProfile.email = email;
+                    localStorage.setItem(`mta_user_profile_${user.uid}`, JSON.stringify(userProfile));
+                    
+                    // Update Auth display name in background
+                    try {
+                        await updateProfile(user, { displayName: name });
+                    } catch (authError) {
+                        console.warn("Firebase Auth display name update warning: ", authError);
+                    }
+                    
+                    showToast("Profile details updated successfully.", "success");
+                    if (profileModal) profileModal.classList.add('hidden');
+                    
+                    // Refresh greeting headers and prefill active booking form inputs
+                    updateUIState(user);
+                } catch (error) {
+                    console.error("Failed to save profile modal data:", error);
+                    showToast("Failed to save changes. Please try again.", "error");
+                } finally {
+                    if (btnSaveProfileModal) {
+                        btnSaveProfileModal.disabled = false;
+                        btnSaveProfileModal.innerHTML = 'Save Changes';
+                    }
+                }
+            });
+        }
     }
 
     // --- 8. Initial Execution ---

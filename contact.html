@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact MTA Travels. Reach out for custom van rental quotes, chauffeur services, or reservation support in the USA.">
+    <title>Contact Us | MTA Travels</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom JS -->
+    <script type="module" src="contact.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">MTA</span> Travels
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html#home" class="nav-link">Home</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="index.html#booking" class="nav-link">Book Now</a>
+                <a href="index.html#fleet" class="nav-link">Our Fleet</a>
+                <a href="index.html#why-choose-us" class="nav-link">Why Us</a>
+            </nav>
+            <div id="userStatus" class="user-status-container hidden">
+                <span id="userPhoneNumber" class="user-phone"></span>
+                <button id="profileEditBtn" class="profile-icon-btn" aria-label="Edit Profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                </button>
+                <a href="dashboard.html" id="headerDashboardBtn" class="btn btn-xs btn-outline">Dashboard</a>
+                <button id="logoutBtn" class="btn btn-xs btn-outline-logout">Logout</button>
+            </div>
+            <a href="login.html" id="headerLoginBtn" class="btn btn-outline nav-cta">Login</a>
+            <a href="index.html#booking" id="headerReserveBtn" class="btn btn-primary nav-cta hidden">Reserve Van</a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Page Title Header -->
+    <section class="page-title-section">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>Get in touch with our team for custom quotes and support</p>
+        </div>
+    </section>
+
+    <!-- Contact Content Grid -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                
+                <!-- Left: Contact Info & Map Mock -->
+                <div class="contact-info-column">
+                    <div class="contact-info-card">
+                        <h4>Contact Information</h4>
+                        <p>Have questions or want to make a custom reservation? Get in touch with our 24/7 support team.</p>
+                        
+                        <div class="contact-info-list-container">
+                            <div class="contact-info-item">
+                                <div class="info-icon">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div class="info-details">
+                                    <h5>Phone Number</h5>
+                                    <a href="tel:+18005550199">+1 (800) 555-0199</a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-info-item">
+                                <div class="info-icon">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div class="info-details">
+                                    <h5>Email Address</h5>
+                                    <a href="mailto:bookings@mtasolovan.com">bookings@mtasolovan.com</a>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-info-item">
+                                <div class="info-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div class="info-details">
+                                    <h5>Office</h5>
+                                    <span>1200 Premium Way, Suite 400<br>Dallas, TX 75201, USA</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-info-item">
+                                <div class="info-icon">
+                                    <i class="fa-solid fa-clock"></i>
+                                </div>
+                                <div class="info-details">
+                                    <h5>Operating Hours</h5>
+                                    <span>24/7 Support & Dispatch Services</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Mock Card -->
+                    <div class="contact-map-mock">
+                        <div class="map-mock-bg">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            <h5>MTA Travels Dallas HQ</h5>
+                            <span>1200 Premium Way, Suite 400, Dallas, TX</span>
+                            <a href="https://maps.google.com" target="_blank" class="btn btn-xs btn-outline">
+                                <i class="fa-solid fa-up-right-from-square"></i> Open in Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Contact Form -->
+                <div class="contact-form-card">
+                    <h4>Send Us a Message</h4>
+                    <p>Complete the form below and an MTA Travels representative will contact you within 15 minutes.</p>
+                    
+                    <form id="contactForm" class="booking-form" novalidate>
+                        <div class="form-group margin-bottom-md">
+                            <label for="contactName"><i class="fa-solid fa-user"></i> Full Name</label>
+                            <input type="text" id="contactName" placeholder="e.g. John Doe" required>
+                            <span class="error-message" id="error-contactName">Full name is required.</span>
+                        </div>
+                        
+                        <div class="form-group margin-bottom-md">
+                            <label for="contactEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                            <input type="email" id="contactEmail" placeholder="e.g. john@example.com" required>
+                            <span class="error-message" id="error-contactEmail">Please enter a valid email address.</span>
+                        </div>
+
+                        <div class="form-group margin-bottom-md">
+                            <label for="contactPhone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+                            <input type="tel" id="contactPhone" placeholder="e.g. +1 (555) 019-9111" required>
+                            <span class="error-message" id="error-contactPhone">Phone number is required.</span>
+                        </div>
+
+                        <div class="form-group margin-bottom-md">
+                            <label for="contactSubject"><i class="fa-solid fa-pen"></i> Subject</label>
+                            <select id="contactSubject" required>
+                                <option value="" disabled selected>-- Select a subject --</option>
+                                <option value="General Inquiry">General Inquiry</option>
+                                <option value="Custom Quote Request">Custom Quote Request</option>
+                                <option value="Partnership Proposal">Partnership Proposal</option>
+                                <option value="Support / Existing Booking">Support / Existing Booking</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="error-message" id="error-contactSubject">Please select a subject.</span>
+                        </div>
+
+                        <div class="form-group margin-bottom-md">
+                            <label for="contactMessage"><i class="fa-solid fa-comment-dots"></i> Message</label>
+                            <textarea id="contactMessage" rows="5" placeholder="Write your message here..." required></textarea>
+                            <span class="error-message" id="error-contactMessage">Message content is required.</span>
+                        </div>
+                        
+                        <button type="submit" id="sendContactBtn" class="btn btn-primary btn-lg btn-block margin-top-md">
+                            <i class="fa-solid fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <a href="#" class="footer-logo">
+                    <span class="logo-accent">MTA</span> Travels
+                </a>
+                <p class="footer-about-text">Premium solo-van rentals and luxury transportation services across the United States. Experience the highest level of passenger comfort and professional safety.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#booking">Book Now</a></li>
+                    <li><a href="index.html#fleet">Our Fleet</a></li>
+                    <li><a href="index.html#why-choose-us">Why Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="login.html">Client Login</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact">
+                <h4>Corporate HQ</h4>
+                <ul class="contact-info-list">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>1200 Premium Way, Suite 400<br>Dallas, TX 75201, USA</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+18005550199">+1 (800) 555-0199</a>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope"></i>
+                        <a href="mailto:bookings@mtasolovan.com">bookings@mtasolovan.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p>&copy; 2026 MTA Travels. All Rights Reserved. Part of MTA Holdings.</p>
+                <div class="footer-bottom-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
